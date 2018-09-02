@@ -1,0 +1,75 @@
+from math import sin, log
+
+def func(x):
+    return math.sin(x)*(math.log10(2))
+def dif_func(x):
+    return math.sin(x)
+def dif_dif_func(x):
+    return math.cos(x)*(-1)
+n=3
+a=1
+b=2
+xValues=np.zeros(n)
+yValues=np.zeros(n)
+xpValues=np.zeros(3)
+nValues= np.zeros(2)
+ypValues=np.zeros((n,n))
+pValues =np.zeros(len(xpValues))
+Coefs=np.zeros(n-1)
+i=0
+while i<n:
+    xValues[i]=i
+    i=i+1
+i=1
+while i < n:
+
+    yValues[i] = func(xValues[i])
+    i=i+1
+i=0
+while i < len(xpValues):
+    ypValues[(0,i)] = func(xpValues[i])
+    ypValues[(1,i)] = dif_func(yValues[i])
+    pValues[i]= func(xpValues[i])
+    i=i+1
+i=0
+
+def Lagrange(xlist,ylist,t):
+    z = 0
+    for j in range(len(ylist)):
+        pol1 = 1; pol2 = 1
+        for i in range(len(xlist)) :
+            if i==j:
+                pol1= pol1*1;pol2= pol2*1
+            else:
+                pol1 = pol1*(t-xValues[i])
+                pol2 = pol2*(xValues[j]-xValues[i])
+        z= z + yValues[j]*pol1/pol2
+    return z
+
+
+def RazRazOne(x1,x2):
+    result = (func(x2)-func(x1))/(x2-x1)
+    return result
+def RazRazTwo(x1,x2,x3):
+    result = (RazRazOne(x2,x3)-RazRazOne(x1,x2))/(x3-x1)
+    return result
+def Ermit1(point,x,n,y):
+    result = y+RazRazOne(x[0],x[1])*(point-x[0])+RazRazTwo(x[0],x[1],x[2])*(point-x[0])*(point-x[1])
+    return result
+
+
+
+fig=plt.figure()
+ax1=fig.add_axes([0.1,0.1,0.8,0.8])
+ax2=fig.add_axes([0.3,0.1,0.4,0.3])
+ax1.set_title('Lagrange')
+xnew=np.linspace(np.min(xValues),np.max(xValues),20)
+ynew=[Ermit1(j,xValues,n,math.sin(xValues[0])) for j in xnew]
+ax1.plot(xValues,yValues,"o",xnew,ynew,'r')
+ax1.grid(True)
+xnew=np.linspace(np.min(xValues),np.max(xValues),20)
+ynew=[Lagrange(xValues,yValues,j) for j in xnew]
+ax2.plot(xValues,yValues,"x",xnew,ynew)
+ax2.set_title('Ermit')
+plt.grid(True)
+plt.show()
